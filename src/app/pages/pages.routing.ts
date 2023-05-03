@@ -12,8 +12,8 @@ const routes: Routes = [
         path : 'dashboard', 
         component: PagesComponent,
         children : [
-            { path : '', component : DashboardComponent },
-            { path : 'progess',   component : ProgessComponent },
+            { path : '',          component : DashboardComponent },
+            { path : 'progress',  component : ProgessComponent },
             { path : 'grafica1',  component : Grafica1Component },
         ]
     },

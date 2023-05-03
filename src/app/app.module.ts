@@ -5,11 +5,11 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { PagesModule } from './pages/pages.module';
 import { AuthModule } from './auth/auth.module';
+import { ComponentsModule } from './components/components.module';
+
 
 import { AppComponent } from './app.component';
-
 import { Page404Component } from './page404/page404.component';
-
 
 @NgModule({
   declarations: [
@@ -20,7 +20,8 @@ import { Page404Component } from './page404/page404.component';
     BrowserModule,
     AppRoutingModule,
     PagesModule,
-    AuthModule
+    AuthModule,
+    ComponentsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
