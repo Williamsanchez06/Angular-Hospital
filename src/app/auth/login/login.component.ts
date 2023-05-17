@@ -19,7 +19,7 @@ export class LoginComponent implements AfterViewInit {
   public loginForm : FormGroup  = this.fb.group({
     email    : [ localStorage.getItem('email') || '' , [ Validators.required , Validators.email ] ],
     password : ['123456',  Validators.required ],
-    remember : [ false ],
+    remember : [ true ],
   });
 
   @ViewChild('googleBtn') googleBtn !: ElementRef;
@@ -28,6 +28,7 @@ export class LoginComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.googleInit();
+    google.accounts.id.revoke('sanchezalvarez124@gmail.com')
   }
 
   googleInit() {
