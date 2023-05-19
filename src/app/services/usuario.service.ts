@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, catchError, map, of, tap } from 'rxjs';
+import { Observable, catchError, delay, map, of, tap } from 'rxjs';
 import { Router } from '@angular/router';
 
 import { RegisterForm } from '../interfaces/register-form.interface';
@@ -8,6 +8,7 @@ import { environment } from 'src/environments/environment';
 import { loginForm } from '../interfaces/login-form.interface';
 
 import { Usuario } from '../models/usuario.model';
+import { CargarUsuario } from '../interfaces/cargar-usuario.interface';
 
 declare const google : any;
 
@@ -34,6 +35,12 @@ export class UsuarioService {
     return this.usuario.id_usuario || '';
   }
 
+  get headers() {
+    return {
+      headers : { 'Authorization': 'Bearer ' + this.token }
+    }
+  }
+
   logout() {
 
     localStorage.removeItem('token');
@@ -46,10 +53,7 @@ export class UsuarioService {
 
   validarToken(): Observable<boolean> {
 
-    return this.httpClient.get(`${ base_url }/login/renew`,
-     {
-      headers : { 'Authorization': 'Bearer ' + this.token }
-      }).pipe(
+    return this.httpClient.get(`${ base_url }/login/renew`, this.headers ).pipe(
       map( ( res : any ) => {
 
         const { email, google, id_usuario, imagen = "", nombre, role } = res.usuario;
@@ -80,9 +84,7 @@ export class UsuarioService {
       role : this.usuario.role!,
     }
 
-    return this.httpClient.put(`${ base_url }/usuarios/${ this.id }`, data, {
-      headers : { 'Authorization': 'Bearer ' + this.token }
-      });
+    return this.httpClient.put(`${ base_url }/usuarios/${ this.id }`, data, this.headers );
   }
 
   crearUsuario( formData : RegisterForm ) {
@@ -98,6 +100,43 @@ export class UsuarioService {
                           )
   }
 
+  cargarUsuario(  offset : number = 0 ) {
 
+    // http://localhost:3000/api/usuarios
+
+    const url = `${ base_url }/usuarios?offset=${ offset }`;
+
+    return this.httpClient.get<CargarUsuario>( url, this.headers )
+      .pipe(
+        delay( 500 ),
+        map( ( resp ) => {
+
+          const usuarios = resp.usuarios.map( user => {
+
+              return new Usuario( user.nombre, user.email, '', user.imagen, user.google, user.role, user.id_usuario )
+
+          });
+
+          return {
+            total : resp.total,
+            usuarios
+          }
+
+        })
+      )
+
+  }
+
+  eliminarUsuario( id_usuario : any ) {
+
+    return this.httpClient.delete(`${ base_url }/usuarios/${ id_usuario }`, this.headers );
+
+  }
+
+  guardarUsuario( usuario : Usuario ) {
+
+    return this.httpClient.put(`${ base_url }/usuarios/${ usuario.id_usuario }`, usuario, this.headers );
+
+  }
 
 }
